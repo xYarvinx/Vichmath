@@ -29,7 +29,7 @@ public class Lab4VinnitskiyYaroslav {
         System.out.println("Решение системы x:");
         printArray(x);
 
-        // Проверка решения
+
         double[] Ax = multiplyMatrixVector(A, x);
         System.out.println("\nПроверка (A * x):");
         printArray(Ax);

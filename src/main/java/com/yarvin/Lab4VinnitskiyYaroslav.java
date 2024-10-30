@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 public class Lab4VinnitskiyYaroslav {
 
     public static void main(String[] args) {
+        // Определение матрицы A и вектора b для решения системы A * x = b
         double[][] A = {
                 {0.411, 0.421, -0.333, 0.313, -0.141, -0.381, 0.245},
                 {0.241, 0.705, 0.139, -0.409, 0.321, 0.0625, 0.101},
@@ -18,91 +19,91 @@ public class Lab4VinnitskiyYaroslav {
 
         int n = A.length;
 
-        double[][] L = new double[n][n];
-        double[][] U = new double[n][n];
+        double[][] L = new double[n][n]; // Инициализируем нижнюю треугольную матрицу L
+        double[][] U = new double[n][n]; // Инициализируем верхнюю треугольную матрицу U
 
+        // Разложение матрицы A на L и U
         luDecomposition(A, L, U);
 
+        // Решение системы L * y = b методом прямой подстановки
         double[] y = forwardSubstitution(L, b);
+        // Решение системы U * x = y методом обратной подстановки
         double[] x = backwardSubstitution(U, y);
 
         System.out.println("Решение системы x:");
-        printArray(x);
+        printArray(x); // Вывод решения системы
 
-
+        // Проверка правильности решения, вычисляя произведение A * x
         double[] Ax = multiplyMatrixVector(A, x);
         System.out.println("\nПроверка (A * x):");
-        printArray(Ax);
+        printArray(Ax); // Вывод A * x
         System.out.println("\nВектор свободных членов b:");
-        printArray(b);
+        printArray(b); // Вывод исходного вектора b
     }
 
+    // Метод для разложения матрицы A на L и U
     public static void luDecomposition(double[][] A, double[][] L, double[][] U) {
         int n = A.length;
 
         for (int i = 0; i < n; i++) {
-
-            // Вычисление элементов матрицы U
+            // Вычисление элементов верхней треугольной матрицы U
             for (int k = i; k < n; k++) {
                 double sumUpper = 0;
                 for (int j = 0; j < i; j++) {
                     sumUpper += L[i][j] * U[j][k];
                 }
-                U[i][k] = A[i][k] - sumUpper;
+                U[i][k] = A[i][k] - sumUpper; // U[i][k] - элемент верхней треугольной матрицы
             }
 
             // Установка диагонального элемента матрицы L
             L[i][i] = 1;
 
-            // Вычисление элементов матрицы L
+            // Вычисление элементов нижней треугольной матрицы L
             for (int k = i + 1; k < n; k++) {
                 double sumLower = 0;
                 for (int j = 0; j < i; j++) {
                     sumLower += L[k][j] * U[j][i];
                 }
-                L[k][i] = (A[k][i] - sumLower) / U[i][i];
+                L[k][i] = (A[k][i] - sumLower) / U[i][i]; // L[k][i] - элемент нижней треугольной матрицы
             }
         }
     }
 
+    // Метод для прямой подстановки (решение L * y = b)
     public static double[] forwardSubstitution(double[][] L, double[] b) {
         int n = b.length;
-        double[] y = new double[n]; // Инициализируем вектор решения y
+        double[] y = new double[n]; // Инициализация вектора y
 
-        // Выполняем прямую подстановку для решения системы L * y = b
+        // Вычисление каждого элемента y[i]
         for (int i = 0; i < n; i++) {
             double sumForward = 0;
-            // Вычисляем сумму произведений элементов L и уже найденных y
             for (int j = 0; j < i; j++) {
                 sumForward += L[i][j] * y[j];
             }
-            // Находим y[i] с использованием формулы y[i] = b[i] - sumForward
-            y[i] = b[i] - sumForward;
-            // Поскольку на диагонали L единицы (L[i][i] = 1), деление не требуется
+            y[i] = b[i] - sumForward; // Нахождение y[i]
         }
 
         return y; // Возвращаем вектор y
     }
 
+    // Метод для обратной подстановки (решение U * x = y)
     public static double[] backwardSubstitution(double[][] U, double[] y) {
         int n = y.length;
-        double[] x = new double[n]; // Инициализируем вектор решения x
+        double[] x = new double[n]; // Инициализация вектора x
 
-        // Выполняем обратную подстановку для решения системы U * x = y
+        // Вычисление каждого элемента x[i]
         for (int i = n - 1; i >= 0; i--) {
             double sumBackward = 0;
-            // Вычисляем сумму произведений элементов U и уже найденных x
             for (int j = i + 1; j < n; j++) {
-                sumBackward += U[i][j] * x[j]; // Суммируем U[i][j] * x[j] для j от i+1 до n-1
+                sumBackward += U[i][j] * x[j];
             }
-            // Находим x[i] с использованием формулы x[i] = (y[i] - sumBackward) / U[i][i]
-            x[i] = (y[i] - sumBackward) / U[i][i];
+            x[i] = (y[i] - sumBackward) / U[i][i]; // Нахождение x[i]
         }
 
         return x; // Возвращаем вектор x
     }
 
-
+    // Умножение матрицы на вектор
     public static double[] multiplyMatrixVector(double[][] A, double[] x) {
         int n = x.length;
         double[] result = new double[n];
@@ -112,14 +113,15 @@ public class Lab4VinnitskiyYaroslav {
             for (int j = 0; j < n; j++) {
                 sum += A[i][j] * x[j];
             }
-            result[i] = sum;
+            result[i] = sum; // Элемент результата
         }
 
-        return result;
+        return result; // Возвращаем результат умножения
     }
 
+    // Вывод вектора с форматированием
     public static void printArray(double[] array) {
-        DecimalFormat df = new DecimalFormat("#.###");
+        DecimalFormat df = new DecimalFormat("#.###"); // Формат до 3 знаков после запятой
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < array.length; i++) {
             sb.append(df.format(array[i]));
@@ -128,6 +130,6 @@ public class Lab4VinnitskiyYaroslav {
             }
         }
         sb.append("]");
-        System.out.println(sb.toString());
+        System.out.println(sb.toString()); // Вывод результата
     }
 }

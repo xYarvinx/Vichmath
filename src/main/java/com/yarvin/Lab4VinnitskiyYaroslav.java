@@ -1,5 +1,7 @@
 package com.yarvin;
 
+import org.apache.commons.math3.linear.*;
+
 import java.text.DecimalFormat;
 
 public class Lab4VinnitskiyYaroslav {
@@ -19,91 +21,91 @@ public class Lab4VinnitskiyYaroslav {
 
         int n = A.length;
 
-        double[][] L = new double[n][n]; // Инициализируем нижнюю треугольную матрицу L
-        double[][] U = new double[n][n]; // Инициализируем верхнюю треугольную матрицу U
+        double[][] L = new double[n][n];
+        double[][] U = new double[n][n];
 
-        // Разложение матрицы A на L и U
         luDecomposition(A, L, U);
 
-        // Решение системы L * y = b методом прямой подстановки
         double[] y = forwardSubstitution(L, b);
-        // Решение системы U * x = y методом обратной подстановки
         double[] x = backwardSubstitution(U, y);
 
         System.out.println("Решение системы x:");
-        printArray(x); // Вывод решения системы
+        printArray(x);
 
-        // Проверка правильности решения, вычисляя произведение A * x
         double[] Ax = multiplyMatrixVector(A, x);
         System.out.println("\nПроверка (A * x):");
-        printArray(Ax); // Вывод A * x
+        printArray(Ax);
         System.out.println("\nВектор свободных членов b:");
-        printArray(b); // Вывод исходного вектора b
+        printArray(b);
+
+        RealMatrix matrixA = new Array2DRowRealMatrix(A);
+        RealVector vectorB = new ArrayRealVector(b);
+        DecompositionSolver solver = new LUDecomposition(matrixA).getSolver();
+        RealVector solutionVector = solver.solve(vectorB);
+        double[] solutionFromApache = solutionVector.toArray();
+
+        // Вычисление и вывод первой нормы разности
+        double firstNormSolutionDiff = calculateFirstNormDifference(solutionFromApache, x);
+        double firstNormAxDiff = calculateFirstNormDifference(Ax, b);
+
+        System.out.println("\nПервая норма разности решения через Apache Commons Math и нашего решения: " + firstNormSolutionDiff);
+        System.out.println("Первая норма разности произведения матрицы A на вектор x и вектора b: " + firstNormAxDiff);
     }
 
-    // Метод для разложения матрицы A на L и U
     public static void luDecomposition(double[][] A, double[][] L, double[][] U) {
         int n = A.length;
 
         for (int i = 0; i < n; i++) {
-            // Вычисление элементов верхней треугольной матрицы U
             for (int k = i; k < n; k++) {
                 double sumUpper = 0;
                 for (int j = 0; j < i; j++) {
                     sumUpper += L[i][j] * U[j][k];
                 }
-                U[i][k] = A[i][k] - sumUpper; // U[i][k] - элемент верхней треугольной матрицы
+                U[i][k] = A[i][k] - sumUpper;
             }
 
-            // Установка диагонального элемента матрицы L
             L[i][i] = 1;
 
-            // Вычисление элементов нижней треугольной матрицы L
             for (int k = i + 1; k < n; k++) {
                 double sumLower = 0;
                 for (int j = 0; j < i; j++) {
                     sumLower += L[k][j] * U[j][i];
                 }
-                L[k][i] = (A[k][i] - sumLower) / U[i][i]; // L[k][i] - элемент нижней треугольной матрицы
+                L[k][i] = (A[k][i] - sumLower) / U[i][i];
             }
         }
     }
 
-    // Метод для прямой подстановки (решение L * y = b)
     public static double[] forwardSubstitution(double[][] L, double[] b) {
         int n = b.length;
-        double[] y = new double[n]; // Инициализация вектора y
+        double[] y = new double[n];
 
-        // Вычисление каждого элемента y[i]
         for (int i = 0; i < n; i++) {
             double sumForward = 0;
             for (int j = 0; j < i; j++) {
                 sumForward += L[i][j] * y[j];
             }
-            y[i] = b[i] - sumForward; // Нахождение y[i]
+            y[i] = b[i] - sumForward;
         }
 
-        return y; // Возвращаем вектор y
+        return y;
     }
 
-    // Метод для обратной подстановки (решение U * x = y)
     public static double[] backwardSubstitution(double[][] U, double[] y) {
         int n = y.length;
-        double[] x = new double[n]; // Инициализация вектора x
+        double[] x = new double[n];
 
-        // Вычисление каждого элемента x[i]
         for (int i = n - 1; i >= 0; i--) {
             double sumBackward = 0;
             for (int j = i + 1; j < n; j++) {
                 sumBackward += U[i][j] * x[j];
             }
-            x[i] = (y[i] - sumBackward) / U[i][i]; // Нахождение x[i]
+            x[i] = (y[i] - sumBackward) / U[i][i];
         }
 
-        return x; // Возвращаем вектор x
+        return x;
     }
 
-    // Умножение матрицы на вектор
     public static double[] multiplyMatrixVector(double[][] A, double[] x) {
         int n = x.length;
         double[] result = new double[n];
@@ -113,15 +115,14 @@ public class Lab4VinnitskiyYaroslav {
             for (int j = 0; j < n; j++) {
                 sum += A[i][j] * x[j];
             }
-            result[i] = sum; // Элемент результата
+            result[i] = sum;
         }
 
-        return result; // Возвращаем результат умножения
+        return result;
     }
 
-    // Вывод вектора с форматированием
     public static void printArray(double[] array) {
-        DecimalFormat df = new DecimalFormat("#.###"); // Формат до 3 знаков после запятой
+        DecimalFormat df = new DecimalFormat("0.###############");
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < array.length; i++) {
             sb.append(df.format(array[i]));
@@ -130,6 +131,14 @@ public class Lab4VinnitskiyYaroslav {
             }
         }
         sb.append("]");
-        System.out.println(sb.toString()); // Вывод результата
+        System.out.println(sb.toString());
+    }
+
+    public static double calculateFirstNormDifference(double[] v1, double[] v2) {
+        double norm = 0;
+        for (int i = 0; i < v1.length; i++) {
+            norm += Math.abs(v1[i] - v2[i]);
+        }
+        return norm;
     }
 }

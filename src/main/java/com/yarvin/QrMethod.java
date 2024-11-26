@@ -81,6 +81,6 @@ public class QrMethod {
         // Вычисляем невязку решения
         RealVector residual = b.subtract(A.operate(x));
         double residualNorm = residual.getNorm();
-        System.out.printf("Невязка решения (норма вектора b - Ax): %.6e%n", residualNorm);
+        System.out.printf("Невязка решения (норма вектора b - Ax): %.11e%n", residualNorm);
     }
 }

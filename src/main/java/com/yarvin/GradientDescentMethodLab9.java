@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GradientDescentSolver {
+public class GradientDescentMethodLab9 {
 
     /**
      * Выполняет градиентный спуск для решения системы Ax = b и строит график норм резидуалов.
@@ -87,6 +87,10 @@ public class GradientDescentSolver {
         // Строим график норм резидуалов
         plotResidualNorms(residualNorms);
 
+        // Вычисляем и выводим невязку для найденного решения
+        RealVector finalResidual = A.operate(x).subtract(b);
+        System.out.println("Невязка ||Ax - b||: " + finalResidual.getNorm());
+
         return x.toArray();
     }
 
@@ -147,6 +151,18 @@ public class GradientDescentSolver {
         double[] originalAnswer = {2.12727865, 3.03258813, 3.76611894, 1.98884747};
         System.out.print("Изначальный ответ: ");
         printArray(originalAnswer);
+
+        // Вычисляем и выводим невязку для исходного ответа
+        RealMatrix A = MatrixUtils.createRealMatrix(new double[][]{
+                {3.82, 1.02, 0.75, 0.81},
+                {1.05, 4.53, 0.98, 1.53},
+                {0.73, 0.85, 4.71, 0.81},
+                {0.88, 0.81, 1.28, 3.50}
+        });
+        RealVector b = MatrixUtils.createRealVector(new double[]{15.655, 22.705, 23.480, 16.110});
+        RealVector originalX = MatrixUtils.createRealVector(originalAnswer);
+        RealVector originalResidual = A.operate(originalX).subtract(b);
+        System.out.println("Невязка для изначального ответа ||Ax - b||: " + originalResidual.getNorm());
     }
 
     /**

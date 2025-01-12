@@ -122,7 +122,7 @@ public class InverseIterationMethod {
         return new Result(x, eigenvalue, maxIter);
     }
 
-    // Метод для вычисления истинного (наименьшего) собственного значения с использованием Apache Commons Math
+    // Метод для вычисления истинного (наименьшего) собственного значения
     private static double getTrueEigenvalue(double[][] A) {
         RealMatrix matrix = MatrixUtils.createRealMatrix(A);
         EigenDecomposition eigenDecomposition = new EigenDecomposition(matrix);
@@ -146,7 +146,7 @@ public class InverseIterationMethod {
                 {2.0, 1.0, 1.6, 2.0}
         };
 
-        double[][][] matrices = {matrix1}; // Пример с одной матрицей
+        double[][][] matrices = {matrix1};
         double eps = 1e-10;
         int maxIter = 1000;
         double mu = -2.0; // Фиксированный сдвиг, близкий к наименьшему собственному значению

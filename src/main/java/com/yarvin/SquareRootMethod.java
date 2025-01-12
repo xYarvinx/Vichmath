@@ -72,53 +72,110 @@ public class SquareRootMethod {
         return x; // Возвращаем вектор решения x
     }
 
+
     public static void main(String[] args) {
         Locale.setDefault(Locale.US);
 
-        // Определение матрицы A и вектора b
-        double[][] A = {
-                {2.2, 4, -3, 1.5, 0.6, 2, 0.7},
-                {4, 3.2, 1.5, -0.7, -0.8, 3, 1},
-                {-3, 1.5, 1.8, 0.9, 3, 2, 2},
-                {1.5, -0.7, 0.9, 2.2, 4, 3, 1},
-                {0.6, -0.8, 3, 4, 3.2, 0.6, 0.7},
-                {2, 3, 2, 3, 0.6, 2.2, 4},
-                {0.7, 1, 2, 1, 0.7, 4, 3.2}
+        // Определение матриц и векторов
+        double[][][] matrices = {
+                {
+                        {0.411, 0.421, -0.333, 0.313, -0.141, -0.381, 0.245},
+                        {0.421, 0.705, 0.139, -0.409, 0.321, 0.0625, 0.101},
+                        {-0.333, 0.139, 0.502, 0.901, 0.243, 0.819, 0.321},
+                        {0.313, -0.409, 0.901, 0.865, 0.423, 0.118, 0.183},
+                        {-0.141, 0.321, 0.243, 0.423, 1.274, 0.712, 0.423},
+                        {-0.381, 0.0625, 0.819, 0.118, 0.712, 0.808, 0.923},
+                        {0.245, 0.101, 0.321, 0.183, 0.423, 0.923, 1.105}
+                },
+                {
+                        {0.512, 0.201, -0.423, 0.431, -0.231, 0.182, 0.054},
+                        {0.201, 0.603, 0.318, -0.220, 0.432, -0.311, 0.201},
+                        {-0.423, 0.318, 0.651, 0.209, 0.515, 0.118, 0.099},
+                        {0.431, -0.220, 0.209, 0.723, 0.319, 0.140, -0.272},
+                        {-0.231, 0.432, 0.515, 0.319, 0.812, -0.205, 0.415},
+                        {0.182, -0.311, 0.118, 0.140, -0.205, 0.913, -0.317},
+                        {0.054, 0.201, 0.099, -0.272, 0.415, -0.317, 0.645}
+                },
+                {
+                        {0.421, 0.314, -0.352, 0.211, -0.451, 0.382, -0.105},
+                        {0.314, 0.805, 0.129, -0.120, 0.232, 0.181, 0.061},
+                        {-0.352, 0.129, 0.702, 0.309, -0.119, 0.142, 0.211},
+                        {0.211, -0.120, 0.309, 0.803, 0.419, -0.110, -0.122},
+                        {-0.451, 0.232, -0.119, 0.419, 0.612, 0.205, -0.115},
+                        {0.382, 0.181, 0.142, -0.110, 0.205, 0.733, -0.117},
+                        {-0.105, 0.061, 0.211, -0.122, -0.115, -0.117, 0.845}
+                },
+                {
+                        {-7.494, 6.929, 0.919, -1.569, -2.978, 0.838, 1.840},
+                        {6.929, -6.128, 4.458, -2.866, -5.117, 1.262, 2.273},
+                        {0.919, 4.458, -3.906, -2.103, -4.647, 0.311, -0.875},
+                        {-1.569, -2.866, -2.103, -9.897, 2.463, -0.254, 0.085},
+                        {-2.978, -5.117, -4.647, 2.463, -8.634, -1.655, -1.792},
+                        {0.838, 1.262, 0.311, -0.254, -1.655, -8.413, -0.778},
+                        {1.840, 2.273, -0.875, 0.085, -1.792, -0.778, -12.197}
+                },
+                {
+                        {4.0, 1.2, 0.8, 0.5, 0.4, 0.3, 0.2},
+                        {1.2, 3.8, 1.1, 0.9, 0.5, 0.4, 0.3},
+                        {0.8, 1.1, 4.2, 1.0, 0.7, 0.5, 0.4},
+                        {0.5, 0.9, 1.0, 4.5, 1.2, 0.8, 0.6},
+                        {0.4, 0.5, 0.7, 1.2, 3.6, 1.0, 0.7},
+                        {0.3, 0.4, 0.5, 0.8, 1.0, 3.7, 0.9},
+                        {0.2, 0.3, 0.4, 0.6, 0.7, 0.9, 3.9}
+                }
         };
-        double[] b = {3.2, 4.3, -0.1, 3.5, 5.3, 9.0, 3.7};
 
-        // Решение системы методом квадратного корня
-        Complex[] x = squareRootMethod(A, b);
+        double[][] vectors = {
+                {0.096, 1.252, 1.024, 1.023, 1.155, 1.937, 1.673},
+                {0.201, 1.132, 1.041, 0.914, 1.213, 1.435, 1.102},
+                {0.305, 1.452, 1.021, 1.013, 0.923, 1.237, 1.375},
+                {0.293, -0.714, 1.866, 0.474, -1.191, 0.657, -0.975},
+                {1.5, 2.2, 3.1, 4.0, 3.7, 2.8, 1.9}
+        };
 
-        // Вывод решения
-        System.out.print("Ответ: [");
-        for (int i = 0; i < x.length; i++) {
-            System.out.printf(" %.8f+%.1fj", x[i].getReal(), x[i].getImaginary());
-            if (i < x.length - 1) {
-                System.out.print(",");
+        // Цикл по матрицам и векторам
+        for (int i = 0; i < matrices.length; i++) {
+            System.out.printf("Матрица A_%d и вектор f_%d:\n", i + 1, i + 1);
+
+            double[][] A = matrices[i];
+            double[] b = vectors[i];
+
+            // Решение системы методом квадратного корня
+            Complex[] x = squareRootMethod(A, b);
+
+            // Вывод решения
+            System.out.print("Решение: [");
+            for (int j = 0; j < x.length; j++) {
+                System.out.printf(" %.8f+%.1fj", x[j].getReal(), x[j].getImaginary());
+                if (j < x.length - 1) {
+                    System.out.print(",");
+                }
             }
+            System.out.println(" ]");
+
+            // Проверка с помощью Apache Commons Math
+            RealMatrix matrixA = new Array2DRowRealMatrix(A);
+            RealVector vectorB = new ArrayRealVector(b);
+            DecompositionSolver solver = new LUDecomposition(matrixA).getSolver();
+            RealVector result = solver.solve(vectorB);
+
+            // Преобразование решения в действительную часть для сравнения
+            double[] realPartOfX = new double[x.length];
+            for (int j = 0; j < x.length; j++) {
+                realPartOfX[j] = x[j].getReal();
+            }
+
+            // Вычисление норм
+            RealVector realVectorX = new ArrayRealVector(realPartOfX);
+            double normDiff = result.subtract(realVectorX).getNorm();
+            double normAxMinusB = matrixA.operate(result).subtract(vectorB).getNorm();
+
+            // Вывод норм
+            System.out.printf("Норма разности между решениями: %.15e\n", normDiff);
+            System.out.printf("Норма разности (Ax - b): %.15e\n", normAxMinusB);
+
+            System.out.println();
         }
-        System.out.println(" ]");
-
-        // Проверка с помощью Apache Commons Math
-        RealMatrix matrixA = new Array2DRowRealMatrix(A);
-        RealVector vectorB = new ArrayRealVector(b);
-        DecompositionSolver solver = new LUDecomposition(matrixA).getSolver();
-        RealVector result = solver.solve(vectorB);
-
-        // Преобразование решения x в массив действительных чисел для проверки разницы
-        double[] realPartOfX = new double[x.length];
-        for (int i = 0; i < x.length; i++) {
-            realPartOfX[i] = x[i].getReal();
-        }
-
-        // Вычисление нормы разности решений
-        RealVector realVectorX = new ArrayRealVector(realPartOfX);
-        double normDiff = result.subtract(realVectorX).getNorm();
-        System.out.printf("Первая норма разности решения через Apache Commons Math и нашего решения: %.15e%n", normDiff);
-
-        // Проверка разности произведения A * x и вектора b
-        double normAxMinusB = matrixA.operate(result).subtract(vectorB).getNorm();
-        System.out.printf("Первая норма разности произведения матрицы A на вектор x и вектора b: %.15e%n", normAxMinusB);
     }
 }
+

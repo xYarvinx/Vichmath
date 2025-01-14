@@ -2,7 +2,6 @@ package com.yarvin;
 
 import org.apache.commons.math3.linear.*;
 
-
 /**
  * Класс, реализующий итеративный метод Ричардсона для решения системы линейных уравнений Ax = b.
  *
@@ -45,8 +44,8 @@ public class Richardson {
      * @throws Exception Если в спектре матрицы A отсутствуют положительные собственные значения.
      */
     private void computeSpectrum() throws Exception {
-        EigenDecomposition eigenDecomposition = new EigenDecomposition(A);
-        double[] eigenvalues = eigenDecomposition.getRealEigenvalues();
+        RealMatrix[] eigenResult = JacobiEigenvalue.rotationWithBarriers(A, this.p, 100000);
+        double[] eigenvalues = JacobiEigenvalue.extractEigenvalues(eigenResult[0]);
 
         // Фильтруем положительные собственные значения
         double maxVal = Double.NEGATIVE_INFINITY;

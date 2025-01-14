@@ -56,7 +56,6 @@ public class JacobiEigenvalue {
         RealMatrix A_working = A.copy();
         RealMatrix V = MatrixUtils.createRealIdentityMatrix(n); // Матрица собственных векторов
         int iterationCount = 0; // Счетчик итераций
-
         while (iterationCount < maxIterations) {
             // Находим максимальный по модулю внедиагональный элемент
             double maxElement = 0.0;
@@ -79,7 +78,8 @@ public class JacobiEigenvalue {
                 break;
             }
 
-            iterationCount++; // Увеличиваем счетчик итераций
+
+            iterationCount++; // Увеличиваем счетчиthresholdк итераций
 
             // Вычисляем коэффициенты вращения
             double a_ii = A_working.getEntry(i_max, i_max);
@@ -128,7 +128,6 @@ public class JacobiEigenvalue {
         System.out.println("Общее количество итераций: " + iterationCount);
         return new RealMatrix[]{A_working, V};
     }
-
     public static void main(String[] args) {
         // Исходная симметричная матрица
         double[][] data = {
@@ -137,11 +136,31 @@ public class JacobiEigenvalue {
                 {0.008540, -0.723182, 0.015938, 0.342333},
                 {0.733624, -0.076440, 0.342333, -0.045744}
         };
+        double[][] data1 = {
+                {2.2, 1, 0.5, 2},
+                {1, 1.3, 2, 1},
+                {0.5, 2, 0.5, 1.6},
+                {2, 1, 1.6, 2}
+        };
+        double[][] data2 = {
+                {1.00, 0.42, 0.54, 0.66},
+                {0.42, 1.00, 0.32, 0.44},
+                {0.54, 0.32, 1.00, 0.22},
+                {0.66, 0.44, 0.22, 1.00}
+        };
+
+
         RealMatrix A1 = MatrixUtils.createRealMatrix(data);
+        RealMatrix A2 = MatrixUtils.createRealMatrix(data1);
+        RealMatrix A3 = MatrixUtils.createRealMatrix(data2);
 
         // Ожидаемые собственные значения
         double[] expectedEigenvalues = {-0.943568, -0.744036, 0.687843, 0.857774};
+        double[] expectedEigenvalues1 = {5.652, 1.5455, -1.420, 0.22266};
+        double[] expectedEigenvalues2 = {2.3227, 0.7967, 0.6383, 0.2423};
         Arrays.sort(expectedEigenvalues);
+        Arrays.sort(expectedEigenvalues1);
+        Arrays.sort(expectedEigenvalues2);
 
         // Параметры метода Якоби
         double sigma = 1e-10; // Порог сходимости
@@ -177,17 +196,69 @@ public class JacobiEigenvalue {
         System.out.println("\nРазница между вычисленными и ожидаемыми собственными значениями:");
         System.out.println(Arrays.toString(differences));
 
-        // Проверка собственных векторов
-        System.out.println("\nПроверка собственных векторов:");
-        for (int i = 0; i < sortedComputed.length; i++) {
-            double eigenvalue = sortedComputed[i];
-            RealVector eigVector = eigenvectors.getColumnVector(i);
-            RealVector Av = A1.operate(eigVector);
-            RealVector lambdaV = eigVector.mapMultiply(eigenvalue);
-            RealVector residual = Av.subtract(lambdaV);
-            double residualNorm = residual.getNorm();
-            System.out.printf("Погрешность для λ = %.6f: %.6e%n", eigenvalue, residualNorm);
+        // 2 матрица
+
+        // Запуск метода вращения Якоби
+        RealMatrix[] result1 = jacobiRotation(A2, sigma, maxIterations);
+        RealMatrix A_working1 = result1[0];
+        RealMatrix eigenvectors1 = result1[1];
+
+        // Получаем собственные значения (диагональные элементы результирующей матрицы)
+        double[] computedEigenvalues1 = new double[A_working1.getRowDimension()];
+        for (int i = 0; i < A_working1.getRowDimension(); i++) {
+            computedEigenvalues1[i] = A_working1.getEntry(i, i);
         }
+        Arrays.sort(computedEigenvalues1);
+        double[] sortedExpected1 = expectedEigenvalues1.clone();
+        double[] sortedComputed1 = computedEigenvalues1.clone();
+
+        // Вывод результатов
+        System.out.println("\nВычисленные собственные значения:");
+        System.out.println(Arrays.toString(sortedComputed1));
+
+        System.out.println("\nОжидаемые собственные значения:");
+        System.out.println(Arrays.toString(sortedExpected1));
+
+        // Разница между вычисленными и ожидаемыми значениями
+        double[] differences1 = new double[sortedComputed1.length];
+        for (int i = 0; i < differences1.length; i++) {
+            differences1[i] = Math.abs(sortedComputed1[i] - sortedExpected1[i]);
+        }
+
+        System.out.println("\nРазница между вычисленными и ожидаемыми собственными значениями:");
+        System.out.println(Arrays.toString(differences1));
+
+        //3 матрица
+
+        // Запуск метода вращения Якоби
+        RealMatrix[] result2 = jacobiRotation(A3, sigma, maxIterations);
+        RealMatrix A_working2 = result2[0];
+        RealMatrix eigenvectors2 = result2[1];
+
+        // Получаем собственные значения (диагональные элементы результирующей матрицы)
+        double[] computedEigenvalues2 = new double[A_working2.getRowDimension()];
+        for (int i = 0; i < A_working2.getRowDimension(); i++) {
+            computedEigenvalues2[i] = A_working2.getEntry(i, i);
+        }
+        Arrays.sort(computedEigenvalues2);
+        double[] sortedExpected2 = expectedEigenvalues2.clone();
+        double[] sortedComputed2 = computedEigenvalues2.clone();
+
+        // Вывод результатов
+        System.out.println("\nВычисленные собственные значения:");
+        System.out.println(Arrays.toString(sortedComputed2));
+
+        System.out.println("\nОжидаемые собственные значения:");
+        System.out.println(Arrays.toString(sortedExpected2));
+
+        // Разница между вычисленными и ожидаемыми значениями
+        double[] differences2 = new double[sortedComputed2.length];
+        for (int i = 0; i < differences2.length; i++) {
+            differences2[i] = Math.abs(sortedComputed2[i] - sortedExpected2[i]);
+        }
+
+        System.out.println("\nРазница между вычисленными и ожидаемыми собственными значениями:");
+        System.out.println(Arrays.toString(differences2));
     }
 }
 

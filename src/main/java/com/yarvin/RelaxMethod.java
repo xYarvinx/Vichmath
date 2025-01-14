@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class RelaxMethod {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // Определение первой системы: матрицы A и вектора b
         double[][] A = {
                 {10.9, 1.2, 2.1, 0.9},
@@ -15,48 +15,50 @@ public class RelaxMethod {
         };
         double[] b = {-7.0, 5.3, 10.3, 24.6};
 
-        // Определение второй системы: матрицы A1 и вектора b1
-        double[][] A1 = {
-                {3.82, 1.02, 0.75, 0.81},
-                {1.05, 4.53, 0.98, 1.53},
-                {0.73, 0.85, 4.71, 0.81},
-                {0.88, 0.81, 1.28, 3.50}
-        };
-        double[] b1 = {15.655, 22.705, 23.480, 16.110};
 
-        // Решение первой системы
-        try {
-            // Решение методом простой итерации
-            double[] solution1 = simpleIteration(A, b, 1e-15, 10000);
-            System.out.println("\nРешение для первой системы: " + Arrays.toString(solution1));
+            // Решение первым методом
+            double[] solution1 = simpleIteration(A, b, 1e-15, 100);
+            System.out.println("\nРешение первым методом: " + Arrays.toString(solution1));
 
             // Решение прямым методом (LU-разложение)
             double[] x_1 = solveDirect(A, b);
 
             // Вычисление погрешности между решениями
             double error1 = vectorNorm(subtractVectors(x_1, solution1));
-            System.out.println("Погрешность между двумя ответами для первой матрицы: " + error1);
+            System.out.println("Погрешность между двумя ответами для первого метода: " + error1);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        // Решение второй системы
-        try {
             // Решение методом релаксации
-            double[] solution2 = relaxation(A1, b1, 1.3, 1e-15, 10000);
-            System.out.println("\nРешение для второй системы: " + Arrays.toString(solution2));
-
-            // Решение прямым методом (LU-разложение)
-            double[] x_2 = solveDirect(A1, b1);
+            double[] solution2 = relaxation(A, b, 1.2, 1e-15, 300000);
+            System.out.println("\nРешение вторым методом с омега 1.2: " + Arrays.toString(solution2));
 
             // Вычисление погрешности между решениями
-            double error2 = vectorNorm(subtractVectors(x_2, solution2));
-            System.out.println("Погрешность между двумя ответами для второй матрицы: " + error2);
+            double error2 = vectorNorm(subtractVectors(x_1, solution2));
+            System.out.println("Погрешность между двумя ответами для второго метода: " + error2);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+            double[] solution3 = relaxation(A, b, 1.7, 1e-10, 3000000);
+            System.out.println("\nРешение вторым методом с омега 1.3: " + Arrays.toString(solution3));
+            System.out.println("Погрешность между двумя ответами для второго метода: " + vectorNorm(subtractVectors(x_1, solution3)));
+
+            double[] solution4 = relaxation(A, b, 1.0, 1e-15, 300000);
+            System.out.println("\nРешение вторым методом с омега 1.4: " + Arrays.toString(solution4));
+            System.out.println("Погрешность между двумя ответами для второго метода: " + vectorNorm(subtractVectors(x_1, solution4)));
+
+
+            double[] solution5 = relaxation(A, b, 1.5, 1e-15, 300000);
+            System.out.println("\nРешение вторым методом с омега 1.5: " + Arrays.toString(solution5));
+            System.out.println("Погрешность между двумя ответами для второго метода: " + vectorNorm(subtractVectors(x_1, solution5)));
+
+            double[] solution6 = relaxation(A, b, 0.5, 1e-15, 300000);
+            System.out.println("\nРешение вторым методом с омега 0.5: " + Arrays.toString(solution6));
+            System.out.println("Погрешность между двумя ответами для второго метода: " + vectorNorm(subtractVectors(x_1, solution6)));
+
+
+
+            // Вычисление погрешноси между методами
+            double error3 = vectorNorm(subtractVectors(solution1, solution2));
+            System.out.println("Погрешность между двумя ответами методов: " + error3);
+
+
     }
 
     // Проверка матрицы на диагональное преобладание
@@ -78,7 +80,7 @@ public class RelaxMethod {
         return true;
     }
 
-    // Метод простой итерации для решения системы уравнений
+    // Метод простой итерации для решения системы уравнений(Якоби)
     public static double[] simpleIteration(double[][] A_data, double[] b_data, double tolerance, int maxSteps) throws Exception {
         RealMatrix A = MatrixUtils.createRealMatrix(A_data);
         RealVector b = MatrixUtils.createRealVector(b_data);
@@ -122,7 +124,7 @@ public class RelaxMethod {
             }
 
             x = x_new; // Обновление решения
-            System.out.println(Arrays.toString(x.toArray())); // Вывод текущей итерации
+            System.out.println(Arrays.toString(x.toArray()) + " итерация №: " + (step + 1)); // Вывод текущей итерации
         }
 
         throw new Exception("Итерации не сошлись за указанное количество шагов.");
@@ -160,7 +162,7 @@ public class RelaxMethod {
             }
 
             x = x_new; // Обновление решения
-            System.out.println(Arrays.toString(x.toArray())); // Вывод текущей итерации
+            System.out.println(Arrays.toString(x.toArray()) + " итерация №: " + (step + 1)); // Вывод текущей итерации
         }
 
         throw new Exception("Итерации не сошлись за указанное количество шагов.");

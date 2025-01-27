@@ -69,14 +69,6 @@ public class OptimalElimination {
         return solution;
     }
 
-    // Метод для вычисления ошибки решения ||Ax - b||_2
-    public static double calculateError(double[][] a, double[] b, double[] solution) {
-        RealMatrix matrix = new Array2DRowRealMatrix(a);
-        RealVector vector = new ArrayRealVector(b);
-        RealVector result = matrix.operate(new ArrayRealVector(solution));
-        return result.subtract(vector).getNorm();
-    }
-
     public static void main(String[] args) {
         // Тестовая матрица: диагональная
         double[][] diagonalMatrix = {

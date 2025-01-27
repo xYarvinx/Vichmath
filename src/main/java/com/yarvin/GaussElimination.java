@@ -1,9 +1,13 @@
 package com.yarvin;
 
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.linear.*;
+
 import java.util.Arrays;
 
 public class GaussElimination {
 
+    // Метод для решения системы линейных уравнений методом Гаусса
     public static double[] solve(double[][] A, double[] b) {
         int n = b.length;
 
@@ -58,16 +62,21 @@ public class GaussElimination {
         return x;
     }
 
-    public static double calculateNorm(double[] vector) {
-        double norm = 0.0;
-        for (double v : vector) {
-            norm += v * v;
-        }
-        return Math.sqrt(norm);
+    // Метод для вычисления ошибки решения
+    public static double calculateError(double[][] a, double[] b, double[] solution) {
+        // Преобразуем массивы в объекты библиотеки Apache Commons Math
+        RealMatrix matrix = new Array2DRowRealMatrix(a);
+        RealVector vector = new ArrayRealVector(b);
+
+        // Операция матрицы на решение
+        RealVector result = matrix.operate(new ArrayRealVector(solution));
+
+        // Возвращаем норму разности между результатом и вектором b
+        return result.subtract(vector).getNorm();
     }
 
     public static void main(String[] args) {
-        // Диагональная матрица и вектор решений
+        // Тестовая матрица: диагональная
         double[][] diagonalMatrix = {
                 {1, 0, 0, 0, 0, 0, 0, 0},
                 {0, 5, 0, 0, 0, 0, 0, 0},
@@ -80,7 +89,7 @@ public class GaussElimination {
         };
         double[] diagonalVector = {6, 6, 3, 3, 3, 9, 4, 5};
 
-        // Симметричная матрица и вектор решений
+        // Тестовая матрица: симметричная
         double[][] symmetricMatrix = {
                 {9, 5, 6, 6, 3, 8, 1, 2},
                 {5, 9, 8, 3, 7, 6, 3, 7},
@@ -93,14 +102,14 @@ public class GaussElimination {
         };
         double[] symmetricVector = {1, 1, 8, 6, 6, 5, 2, 5};
 
-        // Единичная матрица и вектор решений
+        // Тестовая матрица: единичная
         double[][] identityMatrix = new double[8][8];
         for (int i = 0; i < 8; i++) {
             identityMatrix[i][i] = 1.0;
         }
         double[] identityVector = {9, 8, 9, 3, 1, 4, 5, 7};
 
-        // Верхнетреугольная матрица и вектор решений
+        // Тестовая матрица: верхнетреугольная
         double[][] upperTriangularMatrix = {
                 {6, 1, 8, 5, 1, 3, 7, 4},
                 {0, 1, 1, 4, 7, 7, 1, 7},
@@ -113,7 +122,7 @@ public class GaussElimination {
         };
         double[] upperTriangularVector = {2, 4, 2, 7, 6, 1, 3, 3};
 
-        // Случайная матрица и вектор решений
+        // Тестовая матрица: произвольная
         double[][] randomMatrix = {
                 {7, 5, 3, 7, 2, 9, 2, 5},
                 {2, 5, 7, 9, 1, 5, 3, 5},
@@ -125,35 +134,54 @@ public class GaussElimination {
                 {9, 4, 5, 7, 6, 7, 3, 8}
         };
         double[] randomVector = {9, 5, 8, 5, 7, 6, 4, 8};
+        var matrices = new double[][][]{diagonalMatrix, symmetricMatrix, identityMatrix, upperTriangularMatrix, randomMatrix};
+        var vectors = new double[][]{diagonalVector, symmetricVector, identityVector, upperTriangularVector, randomVector};
 
-        // Решение для диагональной матрицы
-        double[] diagonalSolution = solve(diagonalMatrix, diagonalVector);
-        System.out.println("Решение для диагональной матрицы:");
-        System.out.println(Arrays.toString(diagonalSolution));
-        System.out.println("Норма: " + calculateNorm(diagonalSolution));
+        for (int i = 0; i < matrices.length; i++) {
+            System.out.printf("Матрица A_%d и вектор f_%d:\n", i + 1, i + 1);
 
-        // Решение для симметричной матрицы
-        double[] symmetricSolution = solve(symmetricMatrix, symmetricVector);
-        System.out.println("\nРешение для симметричной матрицы:");
-        System.out.println(Arrays.toString(symmetricSolution));
-        System.out.println("Норма: " + calculateNorm(symmetricSolution));
+            double[][] A = matrices[i];
+            double[] b = vectors[i];
 
-        // Решение для единичной матрицы
-        double[] identitySolution = solve(identityMatrix, identityVector);
-        System.out.println("\nРешение для единичной матрицы:");
-        System.out.println(Arrays.toString(identitySolution));
-        System.out.println("Норма: " + calculateNorm(identitySolution));
+            // Решение системы методом главного элемента
+            double[] x = solve(A, b);
 
-        // Решение для верхнетреугольной матрицы
-        double[] upperTriangularSolution = solve(upperTriangularMatrix, upperTriangularVector);
-        System.out.println("\nРешение для верхнетреугольной матрицы:");
-        System.out.println(Arrays.toString(upperTriangularSolution));
-        System.out.println("Норма: " + calculateNorm(upperTriangularSolution));
+            // Вывод решения
+            System.out.print("Решение: [");
+            for (int j = 0; j < x.length; j++) {
+                System.out.printf(" %.8f", x[j]);
+                if (j < x.length - 1) {
+                    System.out.print(",");
+                }
+            }
+            System.out.println(" ]");
 
-        // Решение для случайной матрицы
-        double[] randomSolution = solve(randomMatrix, randomVector);
-        System.out.println("\nРешение для случайной матрицы:");
-        System.out.println(Arrays.toString(randomSolution));
-        System.out.println("Норма: " + calculateNorm(randomSolution));
+            // Проверка с помощью Apache Commons Math
+            RealMatrix matrixA = new Array2DRowRealMatrix(A);
+            RealVector vectorB = new ArrayRealVector(b);
+            DecompositionSolver solver = new LUDecomposition(matrixA).getSolver();
+            RealVector result = solver.solve(vectorB);
+
+
+            System.out.print("Решение LuDecomposition: [");
+            for (int j = 0; j < result.getDimension(); j++) {
+                System.out.printf(" %.8f", result.getEntry(j));
+                if (j < result.getDimension() - 1) {
+                    System.out.print(",");
+                }
+            }
+            System.out.println(" ]");
+
+            // Вычисление норм
+            RealVector realVectorX = new ArrayRealVector(x);
+            double normDiff = result.subtract(realVectorX).getNorm();
+            double normAxMinusB = matrixA.operate(result).subtract(vectorB).getNorm();
+
+            // Вывод норм
+            System.out.printf("Норма разности между решениями: %.15e\n", normDiff);
+            System.out.printf("Норма разности (Ax - b): %.15e\n", normAxMinusB);
+
+            System.out.println();
+        }
     }
 }

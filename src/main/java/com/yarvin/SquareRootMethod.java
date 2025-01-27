@@ -159,6 +159,15 @@ public class SquareRootMethod {
             DecompositionSolver solver = new LUDecomposition(matrixA).getSolver();
             RealVector result = solver.solve(vectorB);
 
+            System.out.print("Решение LuDecomposition: [");
+            for (int j = 0; j < result.getDimension(); j++) {
+                System.out.printf(" %.8f", result.getEntry(j));
+                if (j < result.getDimension() - 1) {
+                    System.out.print(",");
+                }
+            }
+            System.out.println(" ]");
+
             // Преобразование решения в действительную часть для сравнения
             double[] realPartOfX = new double[x.length];
             for (int j = 0; j < x.length; j++) {
